@@ -63,21 +63,18 @@ public class JaegerSpanNormalizerTest {
     return Map.of(
         "span.type",
         "jaeger",
-        "flink.job.parallelism",
-        4,
-        "flink.source",
-        Map.of(
-            "type", "jaeger",
-            "topic", "jaeger-spans",
-            "kafka.bootstrap.servers", "localhost:9092"),
-        "flink.sink",
-        Map.of(
-            "type", "kafka",
-            "topic", "raw-spans-from-jaeger-spans",
-            "kafka.bootstrap.servers", "localhost:9092",
-            "schema.registry.schema.registry.url", "http://localhost:8081"),
-        "flink.job.metrics.metrics.reporters",
-        "prometheus");
+        "input.topic",
+        "jaeger-spans",
+        "output.topic",
+        "raw-spans-from-jaeger-spans",
+        "kafka.streams.config",
+        Map.of("application.id",
+            "jaeger-spans-to-raw-spans-job",
+            "bootstrap.servers",
+            "localhost:9092"),
+        "schema.registry.config",
+        Map.of("schema.registry.url", "http://localhost:8081")
+    );
   }
 
   @Test
@@ -97,7 +94,7 @@ public class JaegerSpanNormalizerTest {
   public void emptyProcessorConfigShouldFailTheProcessor() {
     Config jobConfig = ConfigFactory.parseMap(getCommonConfig());
     try {
-      new SpanNormalizerJob(jobConfig);
+      JaegerSpanNormalizer.get(jobConfig);
       Assertions.fail("config parsing should fail");
     } catch (RuntimeException e) {
       // We expect exception while parsing the config.
@@ -121,7 +118,7 @@ public class JaegerSpanNormalizerTest {
                 "defaultTenantId", "tenant-1",
                 "tenantIdTagKey", "tenant-id")));
     try {
-      new SpanNormalizerJob(ConfigFactory.parseMap(configs));
+      JaegerSpanNormalizer.get(ConfigFactory.parseMap(configs));
       Assertions.fail("config parsing should fail");
     } catch (RuntimeException e) {
       // We expect exception while parsing the config.

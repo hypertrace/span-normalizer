@@ -17,10 +17,11 @@ replicaCount: 1
 maxUnavailable: 0
 
 image:
-  repository: hypertrace/span-normalizer
-  pullPolicy: IfNotPresent
+  repository: traceableai-docker-dev.jfrog.io/hypertrace/span-normalizer
+  pullPolicy: Always
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: regcred-dev
 
 nodeLabels: {}
 
@@ -68,16 +69,16 @@ deploymentSelectorMatchLabels:
 ###########
 spanNormalizerConfig:
   name: span-normalizer-config
-  flink:
-    source:
-      kafka:
+  kafka:
+    streams:
+      config:
+        metricsRecordingLevel: INFO
+        numStreamThreads: 2
         bootstrapServers: "bootstrap:9092"
-    sink:
-      kafka:
-        bootstrapServers: "bootstrap:9092"
-      schema:
-        registry:
-          url: "http://schema-registry-service:8081"
+  schema:
+    registry:
+      config:
+        schemaRegistryUrl: "http://schema-registry-service:8081"
 
 logConfig:
   name: span-normalizer-log-appender-config
