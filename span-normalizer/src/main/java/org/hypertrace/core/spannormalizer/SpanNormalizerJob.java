@@ -50,7 +50,7 @@ public class SpanNormalizerJob extends KafkaStreamsApp {
         .transform(
             JaegerSpanToAvroRawSpanTransformer::new)
         .to(outputTopic,
-            Produced.with(Serdes.ByteArray(), Serdes.serdeFrom(rawSpanSerde, rawSpanSerde)));
+            Produced.with(Serdes.String(), Serdes.serdeFrom(rawSpanSerde, rawSpanSerde)));
 
     return streamsBuilder;
   }
