@@ -2,12 +2,6 @@
 
 Converts the incoming spans from jaeger or any other format to a raw span format which is understood by the rest of the Hypertrace platform.
 
-## Building locally
-The Span normalizer uses gradlew to compile/install/distribute. Gradle wrapper is already part of the source code. To build Span normalizer, run:
-
-```
-./gradlew dockerBuildImages
-```
 ## How do we use Span normalizer?
 
 | ![space-1.jpg](https://hypertrace-docs.s3.amazonaws.com/ingestion-pipeline.png) | 
@@ -18,7 +12,12 @@ Different tracers can have different span formats and as we support tracers like
 
 You can find first class fields [here.](ttps://github.com/hypertrace/data-model/tree/main/data-model/src/main/avro/eventfields)
 
+## Building locally
+The Span normalizer uses gradlew to compile/install/distribute. Gradle wrapper is already part of the source code. To build Span normalizer, run:
 
+```
+./gradlew dockerBuildImages
+```
 
 ## Docker Image Source:
 - [DockerHub > Span normalizer](https://hub.docker.com/r/hypertrace/span-normalizer)
