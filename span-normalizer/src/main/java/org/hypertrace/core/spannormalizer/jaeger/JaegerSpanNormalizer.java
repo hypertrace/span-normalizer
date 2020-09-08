@@ -167,7 +167,9 @@ public class JaegerSpanNormalizer implements SpanNormalizer<Span, RawSpan> {
 
       // build raw span
       RawSpan rawSpan = rawSpanBuilder.build();
-      logSpanConversion(jaegerSpan, rawSpan);
+      if (LOG.isDebugEnabled()) {
+        logSpanConversion(jaegerSpan, rawSpan);
+      }
       return rawSpan;
     };
   }
@@ -286,13 +288,12 @@ public class JaegerSpanNormalizer implements SpanNormalizer<Span, RawSpan> {
     return eventBuilder.build();
   }
 
+  // Check if debug log is enabled before calling this method
   private void logSpanConversion(Span jaegerSpan, RawSpan rawSpan) {
-    if (LOG.isDebugEnabled()) {
-      try {
-        LOG.debug("Converted Jaeger span: {} to rawSpan: {} ", jaegerSpan, convertToJsonString(rawSpan, rawSpan.getSchema()));
-      } catch (IOException e) {
-        LOG.warn("An exception occurred while converting avro to JSON string", e);
-      }
+    try {
+      LOG.debug("Converted Jaeger span: {} to rawSpan: {} ", jaegerSpan, convertToJsonString(rawSpan, rawSpan.getSchema()));
+    } catch (IOException e) {
+      LOG.warn("An exception occurred while converting avro to JSON string", e);
     }
   }
 
