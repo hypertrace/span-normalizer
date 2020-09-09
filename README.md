@@ -30,12 +30,12 @@ Run `./gradlew test` to execute unit tests.
 You can test the image you built after modification by running docker-compose or helm setup. 
 
 #### docker-compose
-Change the tag for `pinot-servicemanager` from `:main` to `:test` in [docker-compose file](https://github.com/hypertrace/hypertrace/blob/main/docker/docker-compose.yml) like this.
+Change the tag for `span-normalizer` from `:main` to `:test` in [docker-compose file](https://github.com/hypertrace/hypertrace/blob/main/docker/docker-compose.yml) like this.
 
 ```yaml
-  pinot:
-    image: hypertrace/pinot-servicemanager:test
-    container_name: pinot
+  span-normalizer:
+    image: hypertrace/span-normalizer:test
+    container_name: span-normalizer
     ...
 ```
 
