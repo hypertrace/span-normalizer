@@ -24,11 +24,12 @@ The Span normalizer uses gradlew to compile/install/distribute. Gradle wrapper i
 ### Running unit tests
 Run `./gradlew test` to execute unit tests. 
 
----
+
+### Testing image
 
 You can test the image you built after modification by running docker-compose or helm setup. 
 
-### docker-compose
+#### docker-compose
 Change the tag for `pinot-servicemanager` from `:main` to `:test` in [docker-compose file](https://github.com/hypertrace/hypertrace/blob/main/docker/docker-compose.yml) like this.
 
 ```yaml
