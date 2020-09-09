@@ -2,7 +2,7 @@
 
 Converts the incoming spans from jaeger or any other format to a raw span format which is understood by the rest of the Hypertrace platform.
 
-## How do we use Span normalizer?
+## Description
 
 | ![space-1.jpg](https://hypertrace-docs.s3.amazonaws.com/ingestion-pipeline.png) | 
 |:--:| 
@@ -18,6 +18,27 @@ The Span normalizer uses gradlew to compile/install/distribute. Gradle wrapper i
 ```
 ./gradlew dockerBuildImages
 ```
+
+## Testing
+
+### Running unit tests
+Run `./gradlew test` to execute unit tests. 
+
+---
+
+You can test the image you built after modification by running docker-compose or helm setup. 
+
+### docker-compose
+Change the tag for `pinot-servicemanager` from `:main` to `:test` in [docker-compose file](https://github.com/hypertrace/hypertrace/blob/main/docker/docker-compose.yml) like this.
+
+```yaml
+  pinot:
+    image: hypertrace/pinot-servicemanager:test
+    container_name: pinot
+    ...
+```
+
+and then run `docker-compose up` to test the setup.
 
 ## Docker Image Source:
 - [DockerHub > Span normalizer](https://hub.docker.com/r/hypertrace/span-normalizer)
