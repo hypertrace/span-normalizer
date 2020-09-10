@@ -15,9 +15,7 @@ data:
       bootstrap.servers = "{{ .Values.spanNormalizerConfig.kafka.streams.config.bootstrapServers }}"
       auto.offset.reset = "latest"
       auto.commit.interval.ms = 5000
-    }
-    schema.registry.config {
-      schema.registry.url = "{{ .Values.spanNormalizerConfig.schema.registry.config.schemaRegistryUrl }}"
+      schema.registry.url = "{{ .Values.spanNormalizerConfig.kafka.streams.config.schemaRegistryUrl }}"
       specific.avro.reader = true
     }
     {{- if hasKey .Values.spanNormalizerConfig "processor" }}

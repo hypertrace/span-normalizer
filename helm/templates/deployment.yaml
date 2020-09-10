@@ -49,7 +49,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           #image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
-          image: traceableai-docker-dev.jfrog.io/hypertrace/span-normalizer:0.1.16-SNAPSHOT
+          image: traceableai-docker-dev.jfrog.io/hypertrace/span-normalizer:0.1.18-SNAPSHOT
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: admin-port
