@@ -9,6 +9,8 @@ import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstan
 
 import com.typesafe.config.Config;
 import io.jaegertracing.api_v2.JaegerSpanInternalModel.Span;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.common.serialization.Serdes;
@@ -40,27 +42,27 @@ public class SpanNormalizer extends KafkaStreamsApp {
   }
 
   @Override
-  public StreamsBuilder buildTopology(Properties properties, StreamsBuilder streamsBuilder, Map<String, KStream<?,?>> inputStreams) {
+  public StreamsBuilder buildTopology(Properties properties, StreamsBuilder streamsBuilder, Map<String, KStream<?, ?>> inputStreams) {
     SchemaRegistryBasedAvroSerde<RawSpan> rawSpanSerde = new SchemaRegistryBasedAvroSerde<>(
-        RawSpan.class);
+            RawSpan.class);
     rawSpanSerde.configure(schemaRegistryConfig, false);
 
     String inputTopic = properties.getProperty(INPUT_TOPIC_CONFIG_KEY);
     String outputTopic = properties.getProperty(OUTPUT_TOPIC_CONFIG_KEY);
 
     KStream<byte[], Span> inputStream = (KStream<byte[], Span>) inputStreams.get(inputTopic);
-    if(inputStream == null){
+    if (inputStream == null) {
 
       inputStream = streamsBuilder
-          .stream(inputTopic, Consumed.with(Serdes.ByteArray(), new JaegerSpanSerde()));
+              .stream(inputTopic, Consumed.with(Serdes.ByteArray(), new JaegerSpanSerde()));
       inputStreams.put(inputTopic, inputStream);
     }
 
     inputStream
-        .transform(
-            JaegerSpanToAvroRawSpanTransformer::new)
-        .to(outputTopic,
-            Produced.with(Serdes.String(), Serdes.serdeFrom(rawSpanSerde, rawSpanSerde)));
+            .transform(
+                    JaegerSpanToAvroRawSpanTransformer::new)
+            .to(outputTopic,
+                    Produced.with(Serdes.String(), Serdes.serdeFrom(rawSpanSerde, rawSpanSerde)));
 
     return streamsBuilder;
   }
@@ -78,9 +80,13 @@ public class SpanNormalizer extends KafkaStreamsApp {
     properties.putAll(ConfigUtils.getFlatMapConfig(config, KAFKA_STREAMS_CONFIG_KEY));
 
     properties.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG,
-        UseWallclockTimeOnInvalidTimestamp.class);
+            UseWallclockTimeOnInvalidTimestamp.class);
     properties.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
-        LogAndContinueExceptionHandler.class);
+            LogAndContinueExceptionHandler.class);
+
+    if (config.hasPath(PRE_CREATE_TOPICS)) {
+      properties.put(PRE_CREATE_TOPICS, config.getString(PRE_CREATE_TOPICS));
+    }
 
     properties.put(JOB_CONFIG, config);
 
@@ -90,5 +96,15 @@ public class SpanNormalizer extends KafkaStreamsApp {
   @Override
   public Logger getLogger() {
     return logger;
+  }
+
+  @Override
+  public List<String> getInputTopics(Properties properties) {
+    return Arrays.asList(properties.getProperty(INPUT_TOPIC_CONFIG_KEY));
+  }
+
+  @Override
+  public List<String> getOutputTopics(Properties properties) {
+    return Arrays.asList(properties.getProperty(OUTPUT_TOPIC_CONFIG_KEY));
   }
 }
