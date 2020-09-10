@@ -20,8 +20,7 @@ image:
   repository: traceableai-docker-dev.jfrog.io/hypertrace/span-normalizer
   pullPolicy: Always
 
-imagePullSecrets:
-  - name: regcred-dev
+imagePullSecrets: [name: regcred-dev]
 
 nodeLabels: {}
 

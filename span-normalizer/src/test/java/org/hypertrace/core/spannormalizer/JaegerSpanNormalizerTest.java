@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.hypertrace.core.datamodel.RawSpan;
+import org.hypertrace.core.serviceframework.config.ConfigClientFactory;
 import org.hypertrace.core.serviceframework.metrics.PlatformMetricsRegistry;
 import org.hypertrace.core.span.constants.RawSpanConstants;
 import org.hypertrace.core.span.constants.v1.JaegerAttribute;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 public class JaegerSpanNormalizerTest {
   private final Random random = new Random();
@@ -43,15 +45,10 @@ public class JaegerSpanNormalizerTest {
   }
 
   @Test
+  @SetEnvironmentVariable(key = "SERVICE_NAME", value= "span-normalizer")
   public void defaultConfigParseTest() {
     try {
-      String configPath =
-          JaegerSpanNormalizerTest.class
-              .getClassLoader()
-              .getResource("configs/span-normalizer/test-application.conf")
-              .getPath();
-      Config jobConfig = ConfigFactory.parseFile(new File(configPath));
-      new SpanNormalizerJob(jobConfig);
+      new SpanNormalizer(ConfigClientFactory.getClient());
     } catch (Exception e) {
       // We don't expect any exceptions in parsing the configuration.
       e.printStackTrace();
@@ -78,11 +75,10 @@ public class JaegerSpanNormalizerTest {
   }
 
   @Test
+  @SetEnvironmentVariable(key = "SERVICE_NAME", value= "span-normalizer")
   public void testTenantIdKeyConfiguration() {
-    Map<String, Object> configs = new HashMap<>(getCommonConfig());
-    configs.putAll(Map.of("processor", Map.of("tenantIdTagKey", "tenant-id")));
     try {
-      new SpanNormalizerJob(ConfigFactory.parseMap(configs));
+      new SpanNormalizer(ConfigClientFactory.getClient());
     } catch (Exception e) {
       // We don't expect any exceptions in parsing the configuration.
       e.printStackTrace();

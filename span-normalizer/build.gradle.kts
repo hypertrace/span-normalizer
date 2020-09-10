@@ -40,9 +40,9 @@ dependencies {
 
   implementation("org.hypertrace.core.datamodel:data-model:0.1.1")
   implementation("org.hypertrace.core.flinkutils:flink-utils:0.1.6")
-  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.8")
+  implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.9")
   implementation("org.hypertrace.core.serviceframework:platform-metrics:0.1.8")
-  implementation("org.hypertrace.core.kafkastreams.framework:kafka-streams-framework:0.1.0-SNAPSHOT")
+  implementation("org.hypertrace.core.kafkastreams.framework:kafka-streams-framework:0.1.1-SNAPSHOT")
 
   // Required for the GRPC clients.
   runtimeOnly("io.grpc:grpc-netty:1.30.2")
@@ -63,4 +63,5 @@ dependencies {
 
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   testImplementation("org.hypertrace.core.serviceframework:platform-metrics:0.1.8")
+  testImplementation("org.junit-pioneer:junit-pioneer:0.9.0")
 }
