@@ -6,7 +6,9 @@ import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstan
 
 import com.typesafe.config.Config;
 import io.jaegertracing.api_v2.JaegerSpanInternalModel.Span;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -69,5 +71,15 @@ public class SpanNormalizer extends KafkaStreamsApp {
   @Override
   public Logger getLogger() {
     return logger;
+  }
+
+  @Override
+  public List<String> getInputTopics() {
+    return Arrays.asList(getAppConfig().getString(INPUT_TOPIC_CONFIG_KEY));
+  }
+
+  @Override
+  public List<String> getOutputTopics() {
+    return Arrays.asList(getAppConfig().getString(OUTPUT_TOPIC_CONFIG_KEY));
   }
 }
