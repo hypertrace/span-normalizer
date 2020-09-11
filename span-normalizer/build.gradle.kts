@@ -4,7 +4,7 @@ plugins {
   jacoco
   id("org.hypertrace.docker-java-application-plugin") version "0.7.1"
   id("org.hypertrace.docker-publish-plugin") version "0.7.1"
-  id("org.hypertrace.jacoco-report-plugin") 
+  id("org.hypertrace.jacoco-report-plugin")
 }
 
 repositories {
