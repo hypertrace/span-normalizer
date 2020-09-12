@@ -17,7 +17,6 @@ data:
       auto.offset.reset = "latest"
       auto.commit.interval.ms = 5000
       schema.registry.url = "{{ .Values.spanNormalizerConfig.kafka.streams.config.schemaRegistryUrl }}"
-      specific.avro.reader = true
     }
     {{- if hasKey .Values.spanNormalizerConfig "processor" }}
     processor {

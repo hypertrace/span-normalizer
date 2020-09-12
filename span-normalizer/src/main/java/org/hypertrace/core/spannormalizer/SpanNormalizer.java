@@ -15,9 +15,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
-import org.hypertrace.core.datamodel.RawSpan;
 import org.hypertrace.core.kafkastreams.framework.KafkaStreamsApp;
-import org.hypertrace.core.kafkastreams.framework.serdes.SchemaRegistryBasedAvroSerde;
 import org.hypertrace.core.serviceframework.config.ConfigClient;
 import org.hypertrace.core.serviceframework.config.ConfigUtils;
 import org.hypertrace.core.spannormalizer.jaeger.JaegerSpanSerde;
@@ -37,11 +35,6 @@ public class SpanNormalizer extends KafkaStreamsApp {
   public StreamsBuilder buildTopology(Map<String, Object> streamsProperties,
       StreamsBuilder streamsBuilder,
       Map<String, KStream<?, ?>> inputStreams) {
-    SchemaRegistryBasedAvroSerde<RawSpan> rawSpanSerde = new SchemaRegistryBasedAvroSerde<>(
-        RawSpan.class);
-
-    rawSpanSerde.configure(streamsProperties, false);
-
     String inputTopic = getAppConfig().getString(INPUT_TOPIC_CONFIG_KEY);
     String outputTopic = getAppConfig().getString(OUTPUT_TOPIC_CONFIG_KEY);
 
@@ -53,10 +46,8 @@ public class SpanNormalizer extends KafkaStreamsApp {
     }
 
     inputStream
-        .transform(
-            JaegerSpanToAvroRawSpanTransformer::new)
-        .to(outputTopic,
-            Produced.with(Serdes.String(), Serdes.serdeFrom(rawSpanSerde, rawSpanSerde)));
+        .transform(JaegerSpanToAvroRawSpanTransformer::new)
+        .to(outputTopic, Produced.keySerde(Serdes.String()));
 
     return streamsBuilder;
   }

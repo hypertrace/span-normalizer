@@ -42,7 +42,7 @@ dependencies {
   implementation("org.hypertrace.core.flinkutils:flink-utils:0.1.6")
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.9")
   implementation("org.hypertrace.core.serviceframework:platform-metrics:0.1.8")
-  implementation("org.hypertrace.core.kafkastreams.framework:kafka-streams-framework:0.1.2")
+  implementation("org.hypertrace.core.kafkastreams.framework:kafka-streams-framework:0.1.4")
 
   // Required for the GRPC clients.
   runtimeOnly("io.grpc:grpc-netty:1.30.2")
