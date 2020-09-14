@@ -3,6 +3,7 @@ package org.hypertrace.core.spannormalizer;
 import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.INPUT_TOPIC_CONFIG_KEY;
 import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.KAFKA_STREAMS_CONFIG_KEY;
 import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.OUTPUT_TOPIC_CONFIG_KEY;
+import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.SPAN_NORMALIZER_JOB_CONFIG;
 
 import com.typesafe.config.Config;
 import io.jaegertracing.api_v2.JaegerSpanInternalModel.Span;
@@ -10,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -53,10 +55,12 @@ public class SpanNormalizer extends KafkaStreamsApp {
   }
 
   @Override
-  public Map<String, Object> getStreamsConfig(Config jobConfig) {
+  public Map<String, Object> getStreamsConfig(Map<String, Object> properties, Config jobConfig) {
     Map<String, Object> streamsConfig = new HashMap<>(
         ConfigUtils.getFlatMapConfig(jobConfig, KAFKA_STREAMS_CONFIG_KEY));
-    return streamsConfig;
+    streamsConfig.forEach(properties::put);
+    properties.put(SPAN_NORMALIZER_JOB_CONFIG, jobConfig);
+    return properties;
   }
 
   @Override
