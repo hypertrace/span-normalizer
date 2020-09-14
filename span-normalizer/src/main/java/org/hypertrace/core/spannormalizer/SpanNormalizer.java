@@ -37,8 +37,10 @@ public class SpanNormalizer extends KafkaStreamsApp {
   public StreamsBuilder buildTopology(Map<String, Object> streamsProperties,
       StreamsBuilder streamsBuilder,
       Map<String, KStream<?, ?>> inputStreams) {
-    String inputTopic = getAppConfig().getString(INPUT_TOPIC_CONFIG_KEY);
-    String outputTopic = getAppConfig().getString(OUTPUT_TOPIC_CONFIG_KEY);
+    Config jobConfig = getJobConfig(streamsProperties);
+
+    String inputTopic = jobConfig.getString(INPUT_TOPIC_CONFIG_KEY);
+    String outputTopic = jobConfig.getString(OUTPUT_TOPIC_CONFIG_KEY);
 
     KStream<byte[], Span> inputStream = (KStream<byte[], Span>) inputStreams.get(inputTopic);
     if (inputStream == null) {
@@ -69,12 +71,18 @@ public class SpanNormalizer extends KafkaStreamsApp {
   }
 
   @Override
-  public List<String> getInputTopics() {
-    return Arrays.asList(getAppConfig().getString(INPUT_TOPIC_CONFIG_KEY));
+  public List<String> getInputTopics(Map<String, Object> properties) {
+    Config jobConfig = getJobConfig(properties);
+    return Arrays.asList(jobConfig.getString(INPUT_TOPIC_CONFIG_KEY));
   }
 
   @Override
-  public List<String> getOutputTopics() {
-    return Arrays.asList(getAppConfig().getString(OUTPUT_TOPIC_CONFIG_KEY));
+  public List<String> getOutputTopics(Map<String, Object> properties) {
+    Config jobConfig = getJobConfig(properties);
+    return Arrays.asList(jobConfig.getString(OUTPUT_TOPIC_CONFIG_KEY));
+  }
+
+  private Config getJobConfig(Map<String, Object> properties) {
+    return(Config) properties.get(SPAN_NORMALIZER_JOB_CONFIG);
   }
 }
