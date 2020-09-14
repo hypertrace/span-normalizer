@@ -1,6 +1,5 @@
 package org.hypertrace.core.spannormalizer.jaeger;
 
-import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.JOB_CONFIG;
 import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.SPAN_NORMALIZER_JOB_CONFIG;
 
 import com.typesafe.config.Config;
