@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -37,8 +36,8 @@ public class SpanNormalizer extends KafkaStreamsApp {
   public StreamsBuilder buildTopology(Map<String, Object> streamsProperties,
       StreamsBuilder streamsBuilder,
       Map<String, KStream<?, ?>> inputStreams) {
-    Config jobConfig = getJobConfig(streamsProperties);
 
+    Config jobConfig = getJobConfig(streamsProperties);
     String inputTopic = jobConfig.getString(INPUT_TOPIC_CONFIG_KEY);
     String outputTopic = jobConfig.getString(OUTPUT_TOPIC_CONFIG_KEY);
 
@@ -64,9 +63,8 @@ public class SpanNormalizer extends KafkaStreamsApp {
   }
 
   @Override
-  public Map<String, Object> additionalJobConfig(Map<String, Object> properties, Config jobConfig) {
-    properties.put(SPAN_NORMALIZER_JOB_CONFIG, jobConfig);
-    return properties;
+  public String getJobConfigKey() {
+    return SPAN_NORMALIZER_JOB_CONFIG;
   }
 
   @Override
@@ -87,6 +85,6 @@ public class SpanNormalizer extends KafkaStreamsApp {
   }
 
   private Config getJobConfig(Map<String, Object> properties) {
-    return(Config) properties.get(SPAN_NORMALIZER_JOB_CONFIG);
+    return (Config) properties.get(getJobConfigKey());
   }
 }
