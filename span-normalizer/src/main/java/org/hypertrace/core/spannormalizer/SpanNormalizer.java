@@ -57,10 +57,14 @@ public class SpanNormalizer extends KafkaStreamsApp {
   }
 
   @Override
-  public Map<String, Object> getStreamsConfig(Map<String, Object> properties, Config jobConfig) {
+  public Map<String, Object> getStreamsConfig(Config jobConfig) {
     Map<String, Object> streamsConfig = new HashMap<>(
         ConfigUtils.getFlatMapConfig(jobConfig, KAFKA_STREAMS_CONFIG_KEY));
-    streamsConfig.forEach(properties::put);
+    return streamsConfig;
+  }
+
+  @Override
+  public Map<String, Object> additionalJobConfig(Map<String, Object> properties, Config jobConfig) {
     properties.put(SPAN_NORMALIZER_JOB_CONFIG, jobConfig);
     return properties;
   }
