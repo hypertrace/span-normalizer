@@ -2,8 +2,8 @@ plugins {
   java
   application
   jacoco
-  id("org.hypertrace.docker-java-application-plugin") version "0.5.1"
-  id("org.hypertrace.docker-publish-plugin") version "0.5.1"
+  id("org.hypertrace.docker-java-application-plugin") version "0.7.1"
+  id("org.hypertrace.docker-publish-plugin") version "0.7.1"
   id("org.hypertrace.jacoco-report-plugin")
 }
 
@@ -41,11 +41,11 @@ dependencies {
   implementation("org.hypertrace.core.datamodel:data-model:0.1.7")
   implementation("org.hypertrace.core.serviceframework:platform-service-framework:0.1.9")
   implementation("org.hypertrace.core.serviceframework:platform-metrics:0.1.8")
-  implementation("org.hypertrace.core.kafkastreams.framework:kafka-streams-framework:0.1.5-SNAPSHOT")
+  implementation("org.hypertrace.core.kafkastreams.framework:kafka-streams-framework:0.1.5")
+
 
   // Required for the GRPC clients.
   runtimeOnly("io.grpc:grpc-netty:1.30.2")
-
   implementation("com.typesafe:config:1.4.0")
   implementation("de.javakaffee:kryo-serializers:0.45")
 
