@@ -3,10 +3,11 @@ package org.hypertrace.core.spannormalizer;
 import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.INPUT_TOPIC_CONFIG_KEY;
 import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.KAFKA_STREAMS_CONFIG_KEY;
 import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.OUTPUT_TOPIC_CONFIG_KEY;
+import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstants.SPAN_NORMALIZER_JOB_CONFIG;
 
 import com.typesafe.config.Config;
 import io.jaegertracing.api_v2.JaegerSpanInternalModel.Span;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +36,10 @@ public class SpanNormalizer extends KafkaStreamsApp {
   public StreamsBuilder buildTopology(Map<String, Object> streamsProperties,
       StreamsBuilder streamsBuilder,
       Map<String, KStream<?, ?>> inputStreams) {
-    String inputTopic = getAppConfig().getString(INPUT_TOPIC_CONFIG_KEY);
-    String outputTopic = getAppConfig().getString(OUTPUT_TOPIC_CONFIG_KEY);
+
+    Config jobConfig = getJobConfig(streamsProperties);
+    String inputTopic = jobConfig.getString(INPUT_TOPIC_CONFIG_KEY);
+    String outputTopic = jobConfig.getString(OUTPUT_TOPIC_CONFIG_KEY);
 
     KStream<byte[], Span> inputStream = (KStream<byte[], Span>) inputStreams.get(inputTopic);
     if (inputStream == null) {
@@ -60,17 +63,28 @@ public class SpanNormalizer extends KafkaStreamsApp {
   }
 
   @Override
+  public String getJobConfigKey() {
+    return SPAN_NORMALIZER_JOB_CONFIG;
+  }
+
+  @Override
   public Logger getLogger() {
     return logger;
   }
 
   @Override
-  public List<String> getInputTopics() {
-    return Arrays.asList(getAppConfig().getString(INPUT_TOPIC_CONFIG_KEY));
+  public List<String> getInputTopics(Map<String, Object> properties) {
+    Config jobConfig = getJobConfig(properties);
+    return Collections.singletonList(jobConfig.getString(INPUT_TOPIC_CONFIG_KEY));
   }
 
   @Override
-  public List<String> getOutputTopics() {
-    return Arrays.asList(getAppConfig().getString(OUTPUT_TOPIC_CONFIG_KEY));
+  public List<String> getOutputTopics(Map<String, Object> properties) {
+    Config jobConfig = getJobConfig(properties);
+    return Collections.singletonList(jobConfig.getString(OUTPUT_TOPIC_CONFIG_KEY));
+  }
+
+  private Config getJobConfig(Map<String, Object> properties) {
+    return (Config) properties.get(getJobConfigKey());
   }
 }
