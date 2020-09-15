@@ -45,7 +45,7 @@ dependencies {
 
 
   // Required for the GRPC clients.
-  runtimeOnly("io.grpc:grpc-netty:1.30.2")
+  runtimeOnly("io.grpc:grpc-netty:1.31.1")
   implementation("com.typesafe:config:1.4.0")
   implementation("de.javakaffee:kryo-serializers:0.45")
 
