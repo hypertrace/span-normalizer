@@ -65,7 +65,6 @@ class SpanNormalizerTest {
         .createInputTopic(config.getString(SpanNormalizerConstants.INPUT_TOPIC_CONFIG_KEY),
             Serdes.ByteArray().serializer(), new JaegerSpanSerde().serializer());
 
-    // make sure the schema reistry url starts with 'mock://' including the one specified in application.conf
     Serde<RawSpan> rawSpanSerde = new AvroSerde<>();
     rawSpanSerde.configure(Map.of(), false);
 
