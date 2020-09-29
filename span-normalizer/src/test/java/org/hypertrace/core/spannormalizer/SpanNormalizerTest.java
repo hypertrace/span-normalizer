@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
@@ -72,10 +73,15 @@ class SpanNormalizerTest {
         .createOutputTopic(config.getString(SpanNormalizerConstants.OUTPUT_TOPIC_CONFIG_KEY),
             Serdes.String().deserializer(), rawSpanSerde.deserializer());
 
-    Span span = Span.newBuilder().setSpanId(ByteString.copyFrom("1".getBytes())).build();
+    Span span = Span.newBuilder().setSpanId(ByteString.copyFrom("1".getBytes()))
+        .setTraceId(ByteString.copyFrom("trace-1".getBytes())).build();
     inputTopic.pipeInput(span);
-    Object value = outputTopic.readValue();
+
+    KeyValue<String, RawSpan> kv = outputTopic.readKeyValue();
+    assertEquals(String.join("|", "__default",
+        HexUtils.getHex(ByteString.copyFrom("trace-1".getBytes()).toByteArray())), kv.key);
+    RawSpan value = kv.value;
     assertEquals(HexUtils.getHex("1".getBytes()),
-        HexUtils.getHex(((RawSpan) value).getEvent().getEventId()));
+        HexUtils.getHex((value).getEvent().getEventId()));
   }
 }
