@@ -1,7 +1,7 @@
 @namespace("org.hypertrace.core.spannormalizer")
 protocol TraceIdentityProtocol {
   record TraceIdentity {
-    union {null, string} tenant_id = null;
-    union {null, bytes} trace_id = null;
+    string tenant_id;
+    bytes trace_id;
   }
 }
