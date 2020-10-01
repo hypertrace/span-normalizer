@@ -74,7 +74,7 @@ class SpanNormalizerTest {
     inputTopic.pipeInput(span);
 
     KeyValue<TraceIdentity, RawSpan> kv = outputTopic.readKeyValue();
-    assertEquals("__default", kv.key.getCustomerId());
+    assertEquals("__default", kv.key.getTenantId());
     assertEquals(HexUtils.getHex(ByteString.copyFrom("trace-1".getBytes()).toByteArray()),
         HexUtils.getHex(kv.key.getTraceId().array()));
     RawSpan value = kv.value;

@@ -33,10 +33,10 @@ public class JaegerSpanToAvroRawSpanTransformer implements
       RawSpan rawSpan = converter.convert(value);
       if (null != rawSpan) {
         String traceId = HexUtils.getHex(rawSpan.getTraceId());
-        String customerId = rawSpan.getCustomerId();
-        // we use the (customer_id|trace_id) as the key so that raw_span_grouper
+        String tenantId = rawSpan.getCustomerId();
+        // we use the (tenant_id, trace_id) as the key so that raw_span_grouper
         // job can do a groupByKey without having to create a repartition topic
-        TraceIdentity traceIdentity = TraceIdentity.newBuilder().setCustomerId(customerId)
+        TraceIdentity traceIdentity = TraceIdentity.newBuilder().setTenantId(tenantId)
             .setTraceId(rawSpan.getTraceId()).build();
         return new KeyValue<>(traceIdentity, rawSpan);
       }
