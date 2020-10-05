@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hypertrace.core.span.constants.v1.OTelSpanTag.OTEL_SPAN_TAG_RPC_METHOD;
-import static org.hypertrace.core.span.constants.v1.OTelSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
-import static org.hypertrace.core.span.constants.v1.OTelSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
+import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_METHOD;
+import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
+import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
 import static org.hypertrace.core.span.constants.v1.Rpc.RPC_ERROR_MESSAGE;
 import static org.hypertrace.core.span.constants.v1.Rpc.RPC_ERROR_NAME;
 import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_BODY;

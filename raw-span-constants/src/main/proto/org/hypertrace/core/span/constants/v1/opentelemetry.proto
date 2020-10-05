@@ -6,7 +6,7 @@ import "org/hypertrace/core/span/constants/v1/enum_extension.proto";
 
 // This file contains constants related to open telemetry tracer.
 // Written as per
-enum OTelSpanTag {
+enum OTELSpanTag {
   OTEL_SPAN_TAG_UNSPECIFIED = 0 [(string_value) = "unspecified"];
 
   // RPC
@@ -23,7 +23,7 @@ enum OTelSpanTag {
   OTEL_SPAN_TAG_NET_TRANSPORT = 7 [(string_value) = "net.transport"];
 }
 
-enum OTelRpcSystem {
+enum OTELRpcSystem {
   OTEL_RPC_SYSTEM_UNSPECIFIED = 0 [(string_value) = "unspecified"];
   OTEL_RPC_SYSTEM_GRPC = 1 [(string_value) = "grpc"];
   OTEL_RPC_SYSTEM_JAVA_RMI = 2 [(string_value) = "java_rmi"];

@@ -13,10 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.hypertrace.core.span.constants.v1.OTelRpcSystem.OTEL_RPC_SYSTEM_GRPC;
-import static org.hypertrace.core.span.constants.v1.OTelSpanTag.OTEL_SPAN_TAG_RPC_METHOD;
-import static org.hypertrace.core.span.constants.v1.OTelSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
-import static org.hypertrace.core.span.constants.v1.OTelSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
+import static org.hypertrace.core.span.constants.v1.OTELRpcSystem.OTEL_RPC_SYSTEM_GRPC;
+import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_METHOD;
+import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
+import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
 import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA;
 import static org.hypertrace.core.span.constants.v1.Rpc.RPC_RESPONSE_METADATA;
 
