@@ -13,10 +13,10 @@ import static org.hypertrace.core.span.constants.v1.Grpc.GRPC_HOST_PORT;
 import static org.hypertrace.core.span.constants.v1.Http.HTTP_REQUEST_HEADER;
 import static org.hypertrace.core.span.constants.v1.Http.HTTP_REQUEST_METHOD;
 import static org.hypertrace.core.span.constants.v1.Http.HTTP_URL;
-import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
-import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA;
 import static org.hypertrace.core.span.constants.v1.Sql.SQL_DB_TYPE;
+import static org.hypertrace.core.span.normalizer.constants.OTelSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
+import static org.hypertrace.core.span.normalizer.constants.OTelSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA;
 import static org.hypertrace.core.spannormalizer.utils.TestUtils.createKeyValue;
 
 public class FieldsGeneratorTest {
@@ -31,9 +31,9 @@ public class FieldsGeneratorTest {
         RawSpanConstants.getValue(HTTP_REQUEST_HEADER) + ".authorization",
         createKeyValue("Bearer some-auth-header"));
     tagsMap.put(RawSpanConstants.getValue(HTTP_URL), createKeyValue("https://example.ai/url2"));
-    tagsMap.put(RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_SYSTEM), createKeyValue("grpc"));
-    tagsMap.put(RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_SERVICE), createKeyValue("example.Api"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA) + ".content-encoding", createKeyValue("identity"));
+    tagsMap.put(OTEL_SPAN_TAG_RPC_SYSTEM.getValue(), createKeyValue("grpc"));
+    tagsMap.put(OTEL_SPAN_TAG_RPC_SERVICE.getValue(), createKeyValue("example.Api"));
+    tagsMap.put(RPC_REQUEST_METADATA.getValue() + ".content-encoding", createKeyValue("identity"));
 
     Event.Builder eventBuilder = Event.newBuilder();
 

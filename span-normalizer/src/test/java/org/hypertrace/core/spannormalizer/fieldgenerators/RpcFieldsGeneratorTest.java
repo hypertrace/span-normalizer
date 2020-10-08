@@ -11,22 +11,22 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_METHOD;
-import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
-import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_ERROR_MESSAGE;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_ERROR_NAME;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_BODY;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_AUTHORITY;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_CONTENT_TYPE;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_PATH;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_USER_AGENT;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_X_FORWARDED_FOR;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_RESPONSE_BODY;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_RESPONSE_METADATA;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_RESPONSE_METADATA_CONTENT_TYPE;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_STATUS_CODE;
+import static org.hypertrace.core.span.normalizer.constants.OTelSpanTag.OTEL_SPAN_TAG_RPC_METHOD;
+import static org.hypertrace.core.span.normalizer.constants.OTelSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
+import static org.hypertrace.core.span.normalizer.constants.OTelSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_ERROR_MESSAGE;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_ERROR_NAME;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_BODY;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_AUTHORITY;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_CONTENT_TYPE;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_PATH;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_USER_AGENT;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_X_FORWARDED_FOR;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_RESPONSE_BODY;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_RESPONSE_METADATA;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_RESPONSE_METADATA_CONTENT_TYPE;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_STATUS_CODE;
 import static org.hypertrace.core.spannormalizer.utils.TestUtils.createKeyValue;
 
 class RpcFieldsGeneratorTest {
@@ -36,9 +36,9 @@ class RpcFieldsGeneratorTest {
     String responseBody = "some grpc response body";
 
     Map<String, JaegerSpanInternalModel.KeyValue> tagsMap = new HashMap<>();
-    tagsMap.put(RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_SYSTEM), createKeyValue("grpc"));
-    tagsMap.put(RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_SERVICE), createKeyValue("package.service"));
-    tagsMap.put(RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_METHOD), createKeyValue("GetId"));
+    tagsMap.put(OTEL_SPAN_TAG_RPC_SYSTEM.getValue(), createKeyValue("grpc"));
+    tagsMap.put(OTEL_SPAN_TAG_RPC_SERVICE.getValue(), createKeyValue("package.service"));
+    tagsMap.put(OTEL_SPAN_TAG_RPC_METHOD.getValue(), createKeyValue("GetId"));
 
     GrpcFieldsGenerator grpcFieldsGenerator = new GrpcFieldsGenerator();
     RpcFieldsGenerator rpcFieldsGenerator = new RpcFieldsGenerator(grpcFieldsGenerator);
@@ -53,20 +53,20 @@ class RpcFieldsGeneratorTest {
           rpcFieldsGenerator.addValueToBuilder(key, keyValue, eventBuilder, tagsMap);
         });
 
-    tagsMap.put(RawSpanConstants.getValue(RPC_ERROR_NAME), createKeyValue("Test Error"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_ERROR_MESSAGE), createKeyValue("This error is a test error"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_STATUS_CODE), createKeyValue(1));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_X_FORWARDED_FOR), createKeyValue("198.12.34.1"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_AUTHORITY), createKeyValue("testservice:45"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_CONTENT_TYPE), createKeyValue("application/grpc"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_PATH), createKeyValue("/package.service/GetId"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_USER_AGENT), createKeyValue("grpc-go/1.17.0"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_RESPONSE_METADATA_CONTENT_TYPE), createKeyValue("application/grpc"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA) + ".content-encoding", createKeyValue("identity"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_RESPONSE_METADATA) + ".server", createKeyValue("envoy"));
+    tagsMap.put(RPC_ERROR_NAME.getValue(), createKeyValue("Test Error"));
+    tagsMap.put(RPC_ERROR_MESSAGE.getValue(), createKeyValue("This error is a test error"));
+    tagsMap.put(RPC_STATUS_CODE.getValue(), createKeyValue(1));
+    tagsMap.put(RPC_REQUEST_METADATA_X_FORWARDED_FOR.getValue(), createKeyValue("198.12.34.1"));
+    tagsMap.put(RPC_REQUEST_METADATA_AUTHORITY.getValue(), createKeyValue("testservice:45"));
+    tagsMap.put(RPC_REQUEST_METADATA_CONTENT_TYPE.getValue(), createKeyValue("application/grpc"));
+    tagsMap.put(RPC_REQUEST_METADATA_PATH.getValue(), createKeyValue("/package.service/GetId"));
+    tagsMap.put(RPC_REQUEST_METADATA_USER_AGENT.getValue(), createKeyValue("grpc-go/1.17.0"));
+    tagsMap.put(RPC_RESPONSE_METADATA_CONTENT_TYPE.getValue(), createKeyValue("application/grpc"));
+    tagsMap.put(RPC_REQUEST_METADATA.getValue() + ".content-encoding", createKeyValue("identity"));
+    tagsMap.put(RPC_RESPONSE_METADATA.getValue() + ".server", createKeyValue("envoy"));
 
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_BODY), createKeyValue(requestBody));
-    tagsMap.put(RawSpanConstants.getValue(RPC_RESPONSE_BODY), createKeyValue(responseBody));
+    tagsMap.put(RPC_REQUEST_BODY.getValue(), createKeyValue(requestBody));
+    tagsMap.put(RPC_RESPONSE_BODY.getValue(), createKeyValue(responseBody));
 
     tagsMap.forEach(
         (key, keyValue) -> {
@@ -105,9 +105,9 @@ class RpcFieldsGeneratorTest {
     String responseBody = "some grpc response body";
 
     Map<String, JaegerSpanInternalModel.KeyValue> tagsMap = new HashMap<>();
-    tagsMap.put(RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_SYSTEM), createKeyValue("wcf"));
-    tagsMap.put(RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_SERVICE), createKeyValue("package.service"));
-    tagsMap.put(RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_METHOD), createKeyValue("GetId"));
+    tagsMap.put(OTEL_SPAN_TAG_RPC_SYSTEM.getValue(), createKeyValue("wcf"));
+    tagsMap.put(OTEL_SPAN_TAG_RPC_SERVICE.getValue(), createKeyValue("package.service"));
+    tagsMap.put(OTEL_SPAN_TAG_RPC_METHOD.getValue(), createKeyValue("GetId"));
 
     GrpcFieldsGenerator grpcFieldsGenerator = new GrpcFieldsGenerator();
     RpcFieldsGenerator rpcFieldsGenerator = new RpcFieldsGenerator(grpcFieldsGenerator);
@@ -122,20 +122,20 @@ class RpcFieldsGeneratorTest {
           rpcFieldsGenerator.addValueToBuilder(key, keyValue, eventBuilder, tagsMap);
         });
 
-    tagsMap.put(RawSpanConstants.getValue(RPC_ERROR_NAME), createKeyValue("Test Error"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_ERROR_MESSAGE), createKeyValue("This error is a test error"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_STATUS_CODE), createKeyValue(1));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_X_FORWARDED_FOR), createKeyValue("198.12.34.1"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_AUTHORITY), createKeyValue("testservice:45"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_CONTENT_TYPE), createKeyValue("application/grpc"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_PATH), createKeyValue("/package.service/GetId"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA_USER_AGENT), createKeyValue("grpc-go/1.17.0"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_RESPONSE_METADATA_CONTENT_TYPE), createKeyValue("application/grpc"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_METADATA) + ".content-encoding", createKeyValue("identity"));
-    tagsMap.put(RawSpanConstants.getValue(RPC_RESPONSE_METADATA) + ".server", createKeyValue("envoy"));
+    tagsMap.put(RPC_ERROR_NAME.getValue(), createKeyValue("Test Error"));
+    tagsMap.put(RPC_ERROR_MESSAGE.getValue(), createKeyValue("This error is a test error"));
+    tagsMap.put(RPC_STATUS_CODE.getValue(), createKeyValue(1));
+    tagsMap.put(RPC_REQUEST_METADATA_X_FORWARDED_FOR.getValue(), createKeyValue("198.12.34.1"));
+    tagsMap.put(RPC_REQUEST_METADATA_AUTHORITY.getValue(), createKeyValue("testservice:45"));
+    tagsMap.put(RPC_REQUEST_METADATA_CONTENT_TYPE.getValue(), createKeyValue("application/grpc"));
+    tagsMap.put(RPC_REQUEST_METADATA_PATH.getValue(), createKeyValue("/package.service/GetId"));
+    tagsMap.put(RPC_REQUEST_METADATA_USER_AGENT.getValue(), createKeyValue("grpc-go/1.17.0"));
+    tagsMap.put(RPC_RESPONSE_METADATA_CONTENT_TYPE.getValue(), createKeyValue("application/grpc"));
+    tagsMap.put(RPC_REQUEST_METADATA.getValue() + ".content-encoding", createKeyValue("identity"));
+    tagsMap.put(RPC_RESPONSE_METADATA.getValue() + ".server", createKeyValue("envoy"));
 
-    tagsMap.put(RawSpanConstants.getValue(RPC_REQUEST_BODY), createKeyValue(requestBody));
-    tagsMap.put(RawSpanConstants.getValue(RPC_RESPONSE_BODY), createKeyValue(responseBody));
+    tagsMap.put(RPC_REQUEST_BODY.getValue(), createKeyValue(requestBody));
+    tagsMap.put(RPC_RESPONSE_BODY.getValue(), createKeyValue(responseBody));
 
     tagsMap.forEach(
         (key, keyValue) -> {

@@ -25,17 +25,17 @@ import static org.hypertrace.core.span.constants.v1.Grpc.GRPC_REQUEST_METADATA;
 import static org.hypertrace.core.span.constants.v1.Grpc.GRPC_RESPONSE_BODY;
 import static org.hypertrace.core.span.constants.v1.Grpc.GRPC_RESPONSE_METADATA;
 import static org.hypertrace.core.span.constants.v1.Grpc.GRPC_STATUS_CODE;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_ERROR_MESSAGE;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_ERROR_NAME;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_BODY;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_AUTHORITY;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_CONTENT_TYPE;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_PATH;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_USER_AGENT;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA_X_FORWARDED_FOR;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_RESPONSE_BODY;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_RESPONSE_METADATA_CONTENT_TYPE;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_STATUS_CODE;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_ERROR_MESSAGE;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_ERROR_NAME;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_BODY;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_AUTHORITY;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_CONTENT_TYPE;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_PATH;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_USER_AGENT;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA_X_FORWARDED_FOR;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_RESPONSE_BODY;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_RESPONSE_METADATA_CONTENT_TYPE;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_STATUS_CODE;
 
 public class GrpcFieldsGenerator extends ProtocolFieldsGenerator<Grpc.Builder> {
   private static final String METADATA_STR_VAL_PREFIX = "Metadata(";
@@ -43,7 +43,7 @@ public class GrpcFieldsGenerator extends ProtocolFieldsGenerator<Grpc.Builder> {
       List.of(
           RawSpanConstants.getValue(CENSUS_RESPONSE_STATUS_CODE),
           RawSpanConstants.getValue(GRPC_STATUS_CODE),
-          RawSpanConstants.getValue(RPC_STATUS_CODE),
+          RPC_STATUS_CODE.getValue(),
           RawSpanConstants.getValue(CENSUS_RESPONSE_CENSUS_STATUS_CODE));
   private static final List<String> STATUS_MESSAGE_ATTRIBUTES =
       List.of(
@@ -136,63 +136,64 @@ public class GrpcFieldsGenerator extends ProtocolFieldsGenerator<Grpc.Builder> {
     Map<String, FieldGenerator<Grpc.Builder>> fieldGeneratorMap = new HashMap<>();
 
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_REQUEST_BODY),
+        RPC_REQUEST_BODY.getValue(),
         (key, keyValue, builder, tagsMap) -> {
           builder.getRequestBuilder().setBody(ValueConverter.getString(keyValue));
           setRequestSize(builder, tagsMap);
         });
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_RESPONSE_BODY),
+        RPC_RESPONSE_BODY.getValue(),
         (key, keyValue, builder, tagsMap) -> {
           builder.getResponseBuilder().setBody(ValueConverter.getString(keyValue));
           setResponseSize(builder, tagsMap);
         });
 
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_ERROR_NAME),
+        RPC_ERROR_NAME.getValue(),
         (key, keyValue, builder, tagsMap) ->
             builder.getResponseBuilder().setErrorName(ValueConverter.getString(keyValue)));
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_ERROR_MESSAGE),
+        RPC_ERROR_MESSAGE.getValue(),
         (key, keyValue, builder, tagsMap) ->
             builder.getResponseBuilder().setErrorMessage(ValueConverter.getString(keyValue)));
 
     // Response Status Code
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_STATUS_CODE),
+        RPC_STATUS_CODE.getValue(),
         (key, keyValue, builder, tagsMap) -> setResponseStatusCode(builder, tagsMap));
 
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_REQUEST_METADATA_X_FORWARDED_FOR),
+        RPC_REQUEST_METADATA_X_FORWARDED_FOR.getValue(),
         (key, keyValue, builder, tagsMap) ->
             builder.getRequestBuilder().getRequestMetadataBuilder().setXForwardedFor(ValueConverter.getString(keyValue))
     );
 
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_REQUEST_METADATA_AUTHORITY),
+        RPC_REQUEST_METADATA_AUTHORITY.getValue(),
         (key, keyValue, builder, tagsMap) ->
             builder.getRequestBuilder().getRequestMetadataBuilder().setAuthority(ValueConverter.getString(keyValue))
     );
 
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_REQUEST_METADATA_CONTENT_TYPE),
+        RPC_REQUEST_METADATA_CONTENT_TYPE.getValue()
+        ,
         (key, keyValue, builder, tagsMap) ->
             builder.getRequestBuilder().getRequestMetadataBuilder().setContentType(ValueConverter.getString(keyValue))
     );
 
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_REQUEST_METADATA_PATH),
+        RPC_REQUEST_METADATA_PATH.getValue(),
         (key, keyValue, builder, tagsMap) ->
             builder.getRequestBuilder().getRequestMetadataBuilder().setPath(ValueConverter.getString(keyValue))
     );
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_REQUEST_METADATA_USER_AGENT),
+        RPC_REQUEST_METADATA_USER_AGENT.getValue(),
         (key, keyValue, builder, tagsMap) ->
             builder.getRequestBuilder().getRequestMetadataBuilder().setUserAgent(ValueConverter.getString(keyValue))
     );
 
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(RPC_RESPONSE_METADATA_CONTENT_TYPE),
+        RPC_RESPONSE_METADATA_CONTENT_TYPE.getValue(),
         (key, keyValue, builder, tagsMap) ->
             builder.getResponseBuilder().getResponseMetadataBuilder().setContentType(ValueConverter.getString(keyValue))
     );
@@ -233,9 +234,9 @@ public class GrpcFieldsGenerator extends ProtocolFieldsGenerator<Grpc.Builder> {
       String requestBody =
           ValueConverter.getString(tagsMap.get(RawSpanConstants.getValue(GRPC_REQUEST_BODY)));
       grpcBuilder.getRequestBuilder().setSize(requestBody.length());
-    } else if (tagsMap.containsKey(RawSpanConstants.getValue(RPC_REQUEST_BODY))) {
+    } else if (tagsMap.containsKey(RPC_REQUEST_BODY.getValue())) {
       String requestBody =
-          ValueConverter.getString(tagsMap.get(RawSpanConstants.getValue(RPC_REQUEST_BODY)));
+          ValueConverter.getString(tagsMap.get(RPC_REQUEST_BODY.getValue()));
       grpcBuilder.getRequestBuilder().setSize(requestBody.length());
     }
   }
@@ -252,9 +253,9 @@ public class GrpcFieldsGenerator extends ProtocolFieldsGenerator<Grpc.Builder> {
       String responseBody =
           ValueConverter.getString(tagsMap.get(RawSpanConstants.getValue(GRPC_RESPONSE_BODY)));
       grpcBuilder.getResponseBuilder().setSize(responseBody.length());
-    } else if (tagsMap.containsKey(RawSpanConstants.getValue(RPC_RESPONSE_BODY))) {
+    } else if (tagsMap.containsKey(RPC_RESPONSE_BODY.getValue())) {
       String responseBody =
-          ValueConverter.getString(tagsMap.get(RawSpanConstants.getValue(RPC_RESPONSE_BODY)));
+          ValueConverter.getString(tagsMap.get(RPC_RESPONSE_BODY.getValue()));
       grpcBuilder.getResponseBuilder().setSize(responseBody.length());
     }
   }

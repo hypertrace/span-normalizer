@@ -13,21 +13,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.hypertrace.core.span.constants.v1.OTELRpcSystem.OTEL_RPC_SYSTEM_GRPC;
-import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_METHOD;
-import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
-import static org.hypertrace.core.span.constants.v1.OTELSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_REQUEST_METADATA;
-import static org.hypertrace.core.span.constants.v1.Rpc.RPC_RESPONSE_METADATA;
+import static org.hypertrace.core.span.normalizer.constants.OTelRpcSystem.OTEL_RPC_SYSTEM_GRPC;
+import static org.hypertrace.core.span.normalizer.constants.OTelSpanTag.OTEL_SPAN_TAG_RPC_METHOD;
+import static org.hypertrace.core.span.normalizer.constants.OTelSpanTag.OTEL_SPAN_TAG_RPC_SERVICE;
+import static org.hypertrace.core.span.normalizer.constants.OTelSpanTag.OTEL_SPAN_TAG_RPC_SYSTEM;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_REQUEST_METADATA;
+import static org.hypertrace.core.span.normalizer.constants.RpcSpanTag.RPC_RESPONSE_METADATA;
 
 public class RpcFieldsGenerator extends ProtocolFieldsGenerator<Rpc.Builder> {
-  private static final String OTEL_SPAN_TAG_RPC_SYSTEM_ATTR = RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_SYSTEM);
-  private static final String OTEL_RPC_SYSTEM_GRPC_VAL = RawSpanConstants.getValue(OTEL_RPC_SYSTEM_GRPC);
+  private static final String OTEL_SPAN_TAG_RPC_SYSTEM_ATTR = OTEL_SPAN_TAG_RPC_SYSTEM.getValue();
+  private static final String OTEL_RPC_SYSTEM_GRPC_VAL = OTEL_RPC_SYSTEM_GRPC.getValue();
   private static final char DOT = '.';
-  private static final String REQUEST_METADATA_PREFIX =
-      RawSpanConstants.getValue(RPC_REQUEST_METADATA) + DOT;
-  private static final String RESPONSE_METADATA_PREFIX =
-      RawSpanConstants.getValue(RPC_RESPONSE_METADATA) + DOT;
+  private static final String REQUEST_METADATA_PREFIX = RPC_REQUEST_METADATA.getValue() + DOT;
+  private static final String RESPONSE_METADATA_PREFIX = RPC_RESPONSE_METADATA.getValue() + DOT;
   private static Logger LOGGER = LoggerFactory.getLogger(RpcFieldsGenerator.class);
   private static Map<String, FieldGenerator<Rpc.Builder>> fieldGeneratorMap = initializeFieldGenerators();
 
@@ -46,13 +44,13 @@ public class RpcFieldsGenerator extends ProtocolFieldsGenerator<Rpc.Builder> {
         }
     );
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_SERVICE),
+        OTEL_SPAN_TAG_RPC_SERVICE.getValue(),
         (key, keyValue, builder, tagsMap) -> {
           builder.setService(ValueConverter.getString(keyValue));
         }
     );
     fieldGeneratorMap.put(
-        RawSpanConstants.getValue(OTEL_SPAN_TAG_RPC_METHOD),
+        OTEL_SPAN_TAG_RPC_METHOD.getValue(),
         (key, keyValue, builder, tagsMap) -> {
           builder.setMethod(ValueConverter.getString(keyValue));
         }
@@ -109,10 +107,7 @@ public class RpcFieldsGenerator extends ProtocolFieldsGenerator<Rpc.Builder> {
   }
 
   private boolean isRpcSystemGrpc(String rpcSystem) {
-    if (StringUtils.isNotBlank(rpcSystem) && StringUtils.equals(rpcSystem, OTEL_RPC_SYSTEM_GRPC_VAL)) {
-      return true;
-    }
-    return false;
+    return (StringUtils.isNotBlank(rpcSystem) && StringUtils.equals(rpcSystem, OTEL_RPC_SYSTEM_GRPC_VAL));
   }
 
   private Optional<String> getSuffix(String key, String prefix) {
