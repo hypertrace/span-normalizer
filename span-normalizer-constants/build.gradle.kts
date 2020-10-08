@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-  testImplementation("junit:junit:4.11")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
 }
 
 description = "traceable-raw-span-constants"
