@@ -14,7 +14,6 @@ import org.hypertrace.core.spannormalizer.TraceIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -25,11 +24,8 @@ public class JaegerSpanToAvroRawSpanTransformer implements
   private static final Logger LOGGER = LoggerFactory
       .getLogger(JaegerSpanToAvroRawSpanTransformer.class);
 
-  private static final String SPAN_RECEIVED_COUNT = "span.received.count";
   private static final String VALID_SPAN_RECEIVED_COUNT = "valid.span.received.count";
   private final ConcurrentMap<String, Counter> tenantToSpanReceivedCount = new ConcurrentHashMap<>();
-
-  private static Counter spanCounter = null;
 
   private JaegerSpanNormalizer converter;
 
@@ -37,14 +33,12 @@ public class JaegerSpanToAvroRawSpanTransformer implements
   public void init(ProcessorContext context) {
     Config jobConfig = (Config) context.appConfigs().get(SPAN_NORMALIZER_JOB_CONFIG);
     converter = JaegerSpanNormalizer.get(jobConfig);
-    spanCounter = PlatformMetricsRegistry.registerCounter(SPAN_RECEIVED_COUNT, new HashMap<>());
   }
 
   @Override
   public KeyValue<TraceIdentity, RawSpan> transform(byte[] key, Span value) {
     try {
       //this is total spans count received. Irrespective of the fact we are able to parse them, or they have tenantId or not.
-      spanCounter.increment();
       RawSpan rawSpan = converter.convert(value);
       if (null != rawSpan) {
         String tenantId = rawSpan.getCustomerId();
