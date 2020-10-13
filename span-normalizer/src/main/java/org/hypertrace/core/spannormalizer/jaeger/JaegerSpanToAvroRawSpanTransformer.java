@@ -5,12 +5,10 @@ import static org.hypertrace.core.spannormalizer.constants.SpanNormalizerConstan
 import com.typesafe.config.Config;
 import io.jaegertracing.api_v2.JaegerSpanInternalModel.Span;
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Timer;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.hypertrace.core.datamodel.RawSpan;
-import org.hypertrace.core.datamodel.shared.HexUtils;
 import org.hypertrace.core.serviceframework.metrics.PlatformMetricsRegistry;
 import org.hypertrace.core.spannormalizer.TraceIdentity;
 import org.slf4j.Logger;
@@ -50,7 +48,7 @@ public class JaegerSpanToAvroRawSpanTransformer implements
       RawSpan rawSpan = converter.convert(value);
       if (null != rawSpan) {
         String tenantId = rawSpan.getCustomerId();
-        //these are spans per tenant that we were able to parse, and had tenantId.
+        //these are spans per tenant that we were able to parse / convert, and had tenantId.
         tenantToSpanReceivedCount.computeIfAbsent(tenantId, tenant -> PlatformMetricsRegistry
             .registerCounter(VALID_SPAN_RECEIVED_COUNT, Map.of("tenantId", tenantId))).increment();
         // we use the (tenant_id, trace_id) as the key so that raw_span_grouper
