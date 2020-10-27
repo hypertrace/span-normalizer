@@ -51,11 +51,10 @@ dependencies {
     because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
   }
   runtime("io.netty:netty-handler-proxy:4.1.53.Final") {
-    because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439s")
+    because("https://snyk.io/vuln/SNYK-JAVA-IONETTY-1020439")
   }
   implementation("com.typesafe:config:1.4.0")
   implementation("de.javakaffee:kryo-serializers:0.45")
-
   implementation("io.confluent:kafka-avro-serializer:5.5.1")
   implementation("org.apache.commons:commons-lang3:3.10")
   implementation("org.apache.httpcomponents:httpclient:4.5.13")
