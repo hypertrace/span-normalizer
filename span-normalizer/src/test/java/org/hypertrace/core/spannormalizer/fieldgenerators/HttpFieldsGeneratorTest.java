@@ -567,32 +567,20 @@ public class HttpFieldsGeneratorTest {
   }
 
   @Test
-  public void testInvalidUrl() {
+  public void testIncompleteUrl() {
     HttpFieldsGenerator httpFieldsGenerator = new HttpFieldsGenerator();
 
-    Map<String, JaegerSpanInternalModel.KeyValue> tagsMap1 = new HashMap<>();
-    tagsMap1.put(RawSpanConstants.getValue(HTTP_URL), createKeyValue("/dispatch/test?a=b&k1=v1"));
+    Map<String, JaegerSpanInternalModel.KeyValue> tagsMap = new HashMap<>();
+    tagsMap.put(RawSpanConstants.getValue(HTTP_URL), createKeyValue("/dispatch/test?a=b&k1=v1"));
 
-    Event.Builder eventBuilder1 = Event.newBuilder();
-    Http.Builder httpBuilder1 = httpFieldsGenerator.getProtocolBuilder(eventBuilder1);
+    Event.Builder eventBuilder = Event.newBuilder();
+    Http.Builder httpBuilder = httpFieldsGenerator.getProtocolBuilder(eventBuilder);
 
-    tagsMap1.forEach(
+    tagsMap.forEach(
         (key, keyValue) ->
-            httpFieldsGenerator.addValueToBuilder(key, keyValue, eventBuilder1, tagsMap1));
+            httpFieldsGenerator.addValueToBuilder(key, keyValue, eventBuilder, tagsMap));
 
-    Assertions.assertNull(httpBuilder1.getRequestBuilder().getUrl());
-
-    Map<String, JaegerSpanInternalModel.KeyValue> tagsMap2 = new HashMap<>();
-    tagsMap2.put(RawSpanConstants.getValue(HTTP_URL), createKeyValue("http://abc.xyz/dispatch/test?a=b&k1=v1"));
-
-    Event.Builder eventBuilder2 = Event.newBuilder();
-    Http.Builder httpBuilder2 = httpFieldsGenerator.getProtocolBuilder(eventBuilder2);
-
-    tagsMap2.forEach(
-            (key, keyValue) ->
-                    httpFieldsGenerator.addValueToBuilder(key, keyValue, eventBuilder2, tagsMap2));
-
-    Assertions.assertEquals("http://abc.xyz/dispatch/test?a=b&k1=v1", httpBuilder2.getRequestBuilder().getUrl());
+    Assertions.assertEquals("/dispatch/test?a=b&k1=v1", httpBuilder.getRequestBuilder().getUrl());
   }
 
   @Test
@@ -673,6 +661,16 @@ public class HttpFieldsGeneratorTest {
     Assertions.assertEquals("/", eventBuilder.getHttpBuilder().getRequestBuilder().getPath());
     Assertions.assertEquals(
         "a1=v1&a2=v2", eventBuilder.getHttpBuilder().getRequestBuilder().getQueryString());
+
+    // No scheme and host name
+    eventBuilder = Event.newBuilder();
+    eventBuilder.getHttpBuilder().getRequestBuilder().setUrl("/apis/5673/events?a1=v1&a2=v2");
+    httpFieldsGenerator.populateOtherFields(eventBuilder);
+
+    Assertions.assertNull(eventBuilder.getHttpBuilder().getRequestBuilder().getScheme());
+    Assertions.assertNull(eventBuilder.getHttpBuilder().getRequestBuilder().getHost());
+    Assertions.assertEquals("/apis/5673/events", eventBuilder.getHttpBuilder().getRequestBuilder().getPath());
+    Assertions.assertEquals("a1=v1&a2=v2", eventBuilder.getHttpBuilder().getRequestBuilder().getQueryString());
 
     // Set path and query string before calling populateOtherFields. Simulate case where fields came
     // from attributes

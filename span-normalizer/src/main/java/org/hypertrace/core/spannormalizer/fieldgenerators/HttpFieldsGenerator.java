@@ -37,10 +37,8 @@ import static org.hypertrace.core.span.constants.v1.OTSpanTag.OT_SPAN_TAG_HTTP_S
 import static org.hypertrace.core.span.constants.v1.OTSpanTag.OT_SPAN_TAG_HTTP_URL;
 
 import io.jaegertracing.api_v2.JaegerSpanInternalModel;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
-  private static Logger LOGGER = LoggerFactory.getLogger(HttpFieldsGenerator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpFieldsGenerator.class);
 
   private static final char DOT = '.';
   private static final String REQUEST_HEADER_PREFIX =
@@ -369,7 +367,7 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
     }
 
     FirstMatchingKeyFinder.getStringValueByFirstMatchingKey(
-            tagsMap, FULL_URL_ATTRIBUTES, s -> !StringUtils.isBlank(s) && isValidUrl(s))
+            tagsMap, FULL_URL_ATTRIBUTES, s -> !StringUtils.isBlank(s) && isValidUri(s))
         .ifPresent(url -> httpBuilder.getRequestBuilder().setUrl(url));
   }
 
@@ -456,21 +454,21 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
         .ifPresent(statusCode -> httpBuilder.getResponseBuilder().setStatusCode(statusCode));
   }
 
-  private static boolean isValidUrl(String s) {
+  private static boolean isValidUri(String s) {
     try {
-      new URL(s);
-    } catch (MalformedURLException e) {
+      new URI(s);
+    } catch (URISyntaxException e) {
       return false;
     }
     return true;
   }
 
-  private void setPathFromUrl(Request.Builder requestBuilder, URL url) {
+  private void setPathFromUri(Request.Builder requestBuilder, URI uri) {
     if (requestBuilder.hasPath()) { // If path was previously set, no need to set it again.
       return;
     }
 
-    String path = url.getPath();
+    String path = uri.getPath();
     if (StringUtils.isBlank(path)) {
       path = SLASH;
     }
@@ -485,16 +483,16 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
 
     String urlStr = requestBuilder.getUrl();
     try {
-      URL url = new URL(urlStr);
-      requestBuilder.setScheme(url.getProtocol());
+      URI uri = new URI(urlStr);
+      requestBuilder.setScheme(uri.getScheme());
       requestBuilder.setHost(
-          url.getAuthority()); // Use authority so in case the port is specified it adds it to this
-      setPathFromUrl(requestBuilder, url);
+          uri.getAuthority()); // Use authority so in case the port is specified it adds it to this
+      setPathFromUri(requestBuilder, uri);
       if (!requestBuilder.hasQueryString()) {
-        requestBuilder.setQueryString(url.getQuery());
+        requestBuilder.setQueryString(uri.getQuery());
       }
-    } catch (MalformedURLException e) {
-      // Should not happen Since the url in the request should be valid.
+    } catch (URISyntaxException e) {
+      // Should not happen Since the uri in the request should be valid.
       LOGGER.error("Error populating url parts", e);
     }
   }
