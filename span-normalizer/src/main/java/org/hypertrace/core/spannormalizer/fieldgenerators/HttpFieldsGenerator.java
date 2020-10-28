@@ -483,6 +483,8 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
 
     String urlStr = requestBuilder.getUrl();
     try {
+      // constructing a URI object here instead of a URL object so that it can handle the cases where url field
+      // contains only path name (like "/customer?customer=392")
       URI uri = new URI(urlStr);
       requestBuilder.setScheme(uri.getScheme());
       requestBuilder.setHost(
