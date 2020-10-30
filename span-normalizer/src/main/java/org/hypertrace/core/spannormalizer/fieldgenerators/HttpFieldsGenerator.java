@@ -38,8 +38,6 @@ import static org.hypertrace.core.span.constants.v1.OTSpanTag.OT_SPAN_TAG_HTTP_U
 
 import io.jaegertracing.api_v2.JaegerSpanInternalModel;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -418,7 +416,7 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
       return;
     }
 
-    getPathFromUriObject(pathFromAttrs.get())
+    getPathFromUrlObject(pathFromAttrs.get())
         .map(HttpFieldsGenerator::removeTrailingSlash)
         .ifPresent(path -> httpBuilder.getRequestBuilder().setPath(path));
   }
@@ -428,11 +426,11 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
     return s.endsWith(SLASH) && s.length() > 1 ? s.substring(0, s.length() - 1) : s;
   }
 
-  private static Optional<String> getPathFromUriObject(String urlPath) {
+  private static Optional<String> getPathFromUrlObject(String urlPath) {
     try {
-      URI uri = new URI(urlPath);
-      return Optional.of(uri.getPath());
-    } catch (URISyntaxException e) {
+      URL url = new URL(dummyUrl, urlPath);
+      return Optional.of(url.getPath());
+    } catch (MalformedURLException e) {
       return Optional.empty();
     }
   }
