@@ -84,6 +84,12 @@ public class JaegerSpanNormalizer implements SpanNormalizer<Span, RawSpan> {
     return INSTANCE;
   }
 
+  public JaegerSpanNormalizer() {
+    this.fieldsGenerator = new FieldsGenerator();
+    String tenantIdTagKey = "tenantIdTagKey";
+    this.tenantIdProvider = new DefaultTenantIdProvider(tenantIdTagKey);
+  }
+
   public JaegerSpanNormalizer(Config config) {
     this.fieldsGenerator = new FieldsGenerator();
 
