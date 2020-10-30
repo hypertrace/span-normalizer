@@ -567,7 +567,7 @@ public class HttpFieldsGeneratorTest {
   }
 
   @Test
-  public void testRelativeUrl() {
+  public void testRelativeUrlNotSetsUrlField() {
     HttpFieldsGenerator httpFieldsGenerator = new HttpFieldsGenerator();
 
     Map<String, JaegerSpanInternalModel.KeyValue> tagsMap = new HashMap<>();
@@ -581,12 +581,12 @@ public class HttpFieldsGeneratorTest {
                     httpFieldsGenerator.addValueToBuilder(key, keyValue, eventBuilder, tagsMap));
     Assertions.assertEquals("/dispatch/test?a=b&k1=v1", httpBuilder.getRequestBuilder().getUrl());
 
-    httpFieldsGenerator.populateOtherFields(eventBuilder);
+    httpFieldsGenerator.populateOtherFields(eventBuilder);  // this should unset the url field
     Assertions.assertNull(httpBuilder.getRequestBuilder().getUrl());
   }
 
   @Test
-  public void testAbsoluteUrl() {
+  public void testAbsoluteUrlSetsUrlField() {
     HttpFieldsGenerator httpFieldsGenerator = new HttpFieldsGenerator();
     Map<String, JaegerSpanInternalModel.KeyValue> tagsMap = new HashMap<>();
     tagsMap.put(RawSpanConstants.getValue(HTTP_URL), createKeyValue("http://abc.xyz/dispatch/test?a=b&k1=v1"));
@@ -603,7 +603,7 @@ public class HttpFieldsGeneratorTest {
   }
 
   @Test
-  public void testInvalidUrl() {
+  public void testInvalidUrlRejectedByUrlValidator() {
     HttpFieldsGenerator httpFieldsGenerator = new HttpFieldsGenerator();
     Map<String, JaegerSpanInternalModel.KeyValue> tagsMap = new HashMap<>();
     tagsMap.put(RawSpanConstants.getValue(HTTP_URL), createKeyValue("xyz://abc.xyz/dispatch/test?a=b&k1=v1"));
@@ -684,7 +684,7 @@ public class HttpFieldsGeneratorTest {
     Assertions.assertEquals("/", eventBuilder.getHttpBuilder().getRequestBuilder().getPath());
     Assertions.assertNull(eventBuilder.getHttpBuilder().getRequestBuilder().getQueryString());
 
-    // Relative URL
+    // Relative URL - should extract path and query string only
     eventBuilder = Event.newBuilder();
     eventBuilder.getHttpBuilder().getRequestBuilder().setUrl("/apis/5673/events?a1=v1&a2=v2");
     httpFieldsGenerator.populateOtherFields(eventBuilder);

@@ -516,7 +516,7 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
     }
   }
 
-  private boolean isAbsoluteUrl(String url) {
+  private static boolean isAbsoluteUrl(String url) {
     try {
       new URL(url);
       return true;
