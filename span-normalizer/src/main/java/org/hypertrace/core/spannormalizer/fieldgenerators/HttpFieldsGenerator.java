@@ -55,7 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
-  private static Logger LOGGER = LoggerFactory.getLogger(HttpFieldsGenerator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpFieldsGenerator.class);
 
   private static final char DOT = '.';
   private static final String REQUEST_HEADER_PREFIX =
@@ -69,6 +69,15 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
   private static final String RESPONSE_COOKIE_PREFIX =
       RawSpanConstants.getValue(HTTP_RESPONSE_COOKIE) + DOT;
   private static final String SLASH = "/";
+  private static URL dummyUrl;
+
+  static {
+    try {
+      dummyUrl = new URL("http://example.com");
+    } catch (MalformedURLException e) {
+      // ignore
+    }
+  }
 
   private static final List<String> FULL_URL_ATTRIBUTES =
       List.of(
@@ -369,7 +378,9 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
     }
 
     FirstMatchingKeyFinder.getStringValueByFirstMatchingKey(
-            tagsMap, FULL_URL_ATTRIBUTES, s -> !StringUtils.isBlank(s) && isValidUrl(s))
+            tagsMap, FULL_URL_ATTRIBUTES,
+            // even though relative URLs are allowed here, they are eventually unset in populateUrlParts method
+            s -> !StringUtils.isBlank(s) && isValidUrl(s))
         .ifPresent(url -> httpBuilder.getRequestBuilder().setUrl(url));
   }
 
@@ -456,9 +467,12 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
         .ifPresent(statusCode -> httpBuilder.getResponseBuilder().setStatusCode(statusCode));
   }
 
-  private static boolean isValidUrl(String s) {
+  /**
+   * accepts any absolute or relative URL
+   */
+  private static boolean isValidUrl(String url) {
     try {
-      new URL(s);
+      new URL(dummyUrl, url);
     } catch (MalformedURLException e) {
       return false;
     }
@@ -485,10 +499,15 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
 
     String urlStr = requestBuilder.getUrl();
     try {
-      URL url = new URL(urlStr);
-      requestBuilder.setScheme(url.getProtocol());
-      requestBuilder.setHost(
-          url.getAuthority()); // Use authority so in case the port is specified it adds it to this
+      URL url;
+      if (isAbsoluteUrl(urlStr)) {
+        url = new URL(urlStr);
+        requestBuilder.setScheme(url.getProtocol());
+        requestBuilder.setHost(url.getAuthority()); // Use authority so in case the port is specified it adds it to this
+      } else {    // relative URL
+        url = new URL(dummyUrl, urlStr);
+        requestBuilder.setUrl(null); //  unset the URL as we only allow absolute/full URLs in the url field
+      }
       setPathFromUrl(requestBuilder, url);
       if (!requestBuilder.hasQueryString()) {
         requestBuilder.setQueryString(url.getQuery());
@@ -496,6 +515,15 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
     } catch (MalformedURLException e) {
       // Should not happen Since the url in the request should be valid.
       LOGGER.error("Error populating url parts", e);
+    }
+  }
+
+  private boolean isAbsoluteUrl(String url) {
+    try {
+      new URL(url);
+      return true;
+    } catch (MalformedURLException e) {
+      return false;
     }
   }
 }
