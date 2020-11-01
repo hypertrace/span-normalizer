@@ -36,6 +36,7 @@ import static org.hypertrace.core.span.constants.v1.OTSpanTag.OT_SPAN_TAG_HTTP_M
 import static org.hypertrace.core.span.constants.v1.OTSpanTag.OT_SPAN_TAG_HTTP_STATUS_CODE;
 import static org.hypertrace.core.span.constants.v1.OTSpanTag.OT_SPAN_TAG_HTTP_URL;
 
+import com.google.common.util.concurrent.RateLimiter;
 import io.jaegertracing.api_v2.JaegerSpanInternalModel;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -54,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpFieldsGenerator.class);
+  private static final RateLimiter LOG_LIMITER = RateLimiter.create(0.1);
 
   private static final char DOT = '.';
   private static final String REQUEST_HEADER_PREFIX =
@@ -431,6 +433,9 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
       URL url = new URL(dummyUrl, urlPath);
       return Optional.of(url.getPath());
     } catch (MalformedURLException e) {
+      if (LOG_LIMITER.tryAcquire()) {
+        LOGGER.warn("Received invalid URL path : {}, {}", urlPath, e.getMessage());
+      }
       return Optional.empty();
     }
   }
@@ -472,6 +477,9 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
     try {
       new URL(dummyUrl, url);
     } catch (MalformedURLException e) {
+      if (LOG_LIMITER.tryAcquire()) {
+        LOGGER.warn("Received invalid URL : {}, {}", url, e.getMessage());
+      }
       return false;
     }
     return true;
