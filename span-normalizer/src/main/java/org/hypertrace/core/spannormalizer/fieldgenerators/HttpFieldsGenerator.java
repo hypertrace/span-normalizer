@@ -69,15 +69,7 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
   private static final String RESPONSE_COOKIE_PREFIX =
       RawSpanConstants.getValue(HTTP_RESPONSE_COOKIE) + DOT;
   private static final String SLASH = "/";
-  private static URL dummyUrl;
-
-  static {
-    try {
-      dummyUrl = new URL("http://example.com");
-    } catch (MalformedURLException e) {
-      // ignore
-    }
-  }
+  private static final String RELATIVE_URL_CONTEXT = "http://hypertrace.org";
 
   private static final List<String> FULL_URL_ATTRIBUTES =
       List.of(
@@ -430,7 +422,7 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
 
   private static Optional<String> getPathFromUrlObject(String urlPath) {
     try {
-      URL url = new URL(dummyUrl, urlPath);
+      URL url = getNormalizedUrl(urlPath);
       return Optional.of(url.getPath());
     } catch (MalformedURLException e) {
       if (LOG_LIMITER.tryAcquire()) {
@@ -471,11 +463,13 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
   }
 
   /**
-   * accepts any absolute or relative URL
+   * accepts any absolute or relative URL. e.g.
+   * absolute URL: http://hypertrace.org/customer?customer=392
+   * relative URL: /customer?customer=392
    */
   private static boolean isValidUrl(String url) {
     try {
-      new URL(dummyUrl, url);
+      getNormalizedUrl(url);
     } catch (MalformedURLException e) {
       if (LOG_LIMITER.tryAcquire()) {
         LOGGER.warn("Received invalid URL : {}, {}", url, e.getMessage());
@@ -505,13 +499,11 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
 
     String urlStr = requestBuilder.getUrl();
     try {
-      URL url;
-      if (isAbsoluteUrl(urlStr)) {
-        url = new URL(urlStr);
+      URL url = getNormalizedUrl(urlStr);
+      if (url.toString().equals(urlStr)) {  // absolute URL
         requestBuilder.setScheme(url.getProtocol());
         requestBuilder.setHost(url.getAuthority()); // Use authority so in case the port is specified it adds it to this
       } else {    // relative URL
-        url = new URL(dummyUrl, urlStr);
         requestBuilder.setUrl(null); //  unset the URL as we only allow absolute/full URLs in the url field
       }
       setPathFromUrl(requestBuilder, url);
@@ -524,12 +516,7 @@ public class HttpFieldsGenerator extends ProtocolFieldsGenerator<Http.Builder> {
     }
   }
 
-  private static boolean isAbsoluteUrl(String url) {
-    try {
-      new URL(url);
-      return true;
-    } catch (MalformedURLException e) {
-      return false;
-    }
+  private static URL getNormalizedUrl(String url) throws MalformedURLException {
+    return new URL(new URL(RELATIVE_URL_CONTEXT), url);
   }
 }
